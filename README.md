@@ -28,7 +28,7 @@ npm i @zahoor/fastify-hookable
 
 | Plugin version | Fastify version | Hookable version |
 | -------------- | --------------- | ---------------- |
-| `>=10.x`       | `^5.x`          | `^5.x`           |
+| `current`      | `^5.x`          | `^5.x`           |
 
 ## Usage
 
