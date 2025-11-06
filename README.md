@@ -4,6 +4,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![Coverage Status](https://img.shields.io/badge/coverage-100%25-brightgreen?style=for-the-badge)]()
 
+> **The current version does not work; DO NOT USE.**
+
 A plugin for [Fastify](http://fastify.dev/) that integrates [`hookable`](https://github.com/unjs/hookable), providing **lifecycle hooks**, **per-request hook contexts**, and **optional debugger integration** for inspecting hook calls.
 
 ## Features
