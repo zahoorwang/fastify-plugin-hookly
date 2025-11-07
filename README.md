@@ -13,7 +13,7 @@ A plugin for [Fastify](http://fastify.dev/) that integrates [`hookable`](https:/
 - Decorates both **Fastify instance** and **Fastify requests** with a `hookable` object.
 - Supports `beforeEach` and `afterEach` hooks for introspection.
 - Automatically cleans up all hooks on server shutdown.
-- Optional integration with [`createDebugger`](https://github.com/unjs/hookable) for detailed console output.
+- Optional integration with [`createDebugger`](https://github.com/unjs/hookable?tab=readme-ov-file#createdebugger) for detailed console output.
 - Fully type-safe with **TypeScript declaration merging** support for custom hooks.
 
 ## Install
