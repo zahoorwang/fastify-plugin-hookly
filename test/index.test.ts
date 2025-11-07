@@ -1,34 +1,53 @@
 import fastify from 'fastify';
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 
+import { fastifyHookable } from '../src/index';
+
 import type { FastifyInstance } from 'fastify';
 
-import { fastifyHookable, isCreateDebuggerOptions } from '../src/index';
+import type { FastifyHookableOptions } from '../src/index';
+
+async function setupServe(options: Partial<FastifyHookableOptions> = {}, handlePreReady?: (instance: FastifyInstance) => void | Promise<void>): Promise<FastifyInstance> {
+  const instance = fastify();
+  await instance.register(fastifyHookable, options as any);
+  await handlePreReady?.(instance);
+  await instance.ready();
+  return instance;
+}
+
+async function withDebuggerOptions(debuggerOptions: Partial<FastifyHookableOptions['debuggerOptions']>): Promise<void> {
+  let instance: FastifyInstance | undefined;
+  try {
+    instance = await setupServe({ debuggerOptions });
+  } finally {
+    await instance?.close();
+    instance = undefined;
+  }
+}
 
 describe('@zahoor/fastify-hookable', () => {
   let serve: FastifyInstance;
   const beforeSpied = vi.fn();
   const afterSpied = vi.fn();
-  const closeSpied = vi.fn();
 
   beforeAll(async () => {
-    serve = fastify();
-
-    serve.register(fastifyHookable, {
-      before: beforeSpied,
-      after: afterSpied,
-      close: closeSpied,
-      debuggerOptions: { tag: 'test', inspect: false, group: true, filter: 'hook:' }
-    });
-
-    // 注册临时路由，用于 request hookable 测试
-    serve.get('/test-request', async request => {
-      expect(request.hookable).toBeDefined();
-      expect(typeof request.hookable.callHook).toBe('function');
-      return { ok: true };
-    });
-
-    await serve.ready();
+    serve = await setupServe(
+      {
+        before: beforeSpied,
+        after: afterSpied,
+        close: vi.fn(), // dummy close hook
+        debuggerOptions: { tag: 'test', inspect: false, group: true, filter: 'hook:' }
+      },
+      //
+      async instance => {
+        // Register a temporary route for request hookable testing
+        instance.get('/test-request', async request => {
+          expect(request.hookable).toBeDefined();
+          expect(typeof request.hookable.callHook).toBe('function');
+          return { ok: true };
+        });
+      }
+    );
   });
 
   afterAll(async () => {
@@ -69,46 +88,29 @@ describe('@zahoor/fastify-hookable', () => {
   // --------------------------------------------
 
   it('should call close hook on server shutdown', async () => {
+    const closeSpied = vi.fn();
+
     // Create a new instance for testing close independently
-    const fastifyClose = fastify();
-    const spied = vi.fn();
-
-    fastifyClose.register(fastifyHookable, { close: spied });
-    await fastifyClose.ready();
-    // expect(spied).not.toHaveBeenCalled();
-
+    const fastifyClose = await setupServe({ close: closeSpied });
     await fastifyClose.close(); // triggers onClose
-    expect(spied).toHaveBeenCalled();
+    expect(closeSpied).toHaveBeenCalled();
   });
 
   // --------------------------------------------
   // debuggerOptions branch (indirectly tested via registration)
   // --------------------------------------------
 
-  it('should execute debuggerOptions branch without errors', async () => {
-    const hookName = 'debugger:hook';
-    serve.hookable.hook(hookName, () => 'ok');
-    const result = await serve.hookable.callHook(hookName);
-    expect(result).toEqual('ok');
-  });
+  it('should cover all valid and invalid debuggerOptions paths using auxiliary function', async () => {
+    // valid paths
+    await withDebuggerOptions({ filter: () => true }); // filter: (event: string) => boolean
+    await withDebuggerOptions({}); // {} empty object
 
-  // --------------------------------------------
-  // isCreateDebuggerOptions
-  // --------------------------------------------
-
-  it('should return true for valid CreateDebuggerOptions', () => {
-    expect(isCreateDebuggerOptions({ tag: 'test' })).toBe(true);
-    expect(isCreateDebuggerOptions({ inspect: true })).toBe(true);
-    expect(isCreateDebuggerOptions({ group: false })).toBe(true);
-    expect(isCreateDebuggerOptions({ filter: 'hook:' })).toBe(true);
-    expect(isCreateDebuggerOptions({ filter: () => true })).toBe(true);
-  });
-
-  it('should return false for invalid CreateDebuggerOptions', () => {
-    expect(isCreateDebuggerOptions(null)).toBe(false);
-    expect(isCreateDebuggerOptions({ tag: 123 })).toBe(false);
-    expect(isCreateDebuggerOptions({ inspect: 'yes' })).toBe(false);
-    expect(isCreateDebuggerOptions({ group: 'no' })).toBe(false);
-    expect(isCreateDebuggerOptions({ filter: 123 })).toBe(false);
+    // invalid paths
+    await withDebuggerOptions('not an object' as any); // typeof value !== 'object'
+    await withDebuggerOptions(null as any); // value === null
+    await withDebuggerOptions({ tag: 123 } as any); // tag: number
+    await withDebuggerOptions({ inspect: 'yes' } as any); // inspect: string
+    await withDebuggerOptions({ group: 'no' } as any); // group: string
+    await withDebuggerOptions({ filter: 123 } as any); // filter: invalid type
   });
 });

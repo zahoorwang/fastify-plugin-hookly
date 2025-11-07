@@ -107,7 +107,7 @@ type FastifyHookablePlugin = FastifyPluginCallback<NonNullable<FastifyHookableOp
  * @returns True if the value matches the `CreateDebuggerOptions` shape.
  * @internal
  */
-export function isCreateDebuggerOptions(value: unknown): value is CreateDebuggerOptions {
+function isCreateDebuggerOptions(value: unknown): value is CreateDebuggerOptions {
   if (typeof value !== 'object' || value === null) return false;
 
   const o = value as Record<string, unknown>;
