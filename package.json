@@ -9,7 +9,7 @@
     "hook",
     "hookable"
   ],
-  "homepage": "https://zahoor.wang/fastify/plugin/hookable",
+  "homepage": "https://zahoor.wang/fastify/hookable",
   "bugs": {
     "url": "https://github.com/zahoorwang/fastify-plugin-hookable/issues"
   },
