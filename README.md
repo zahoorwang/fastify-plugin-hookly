@@ -22,8 +22,6 @@ A plugin for [Fastify](http://fastify.dev/) that integrates [`hookable`](https:/
 npm i @zahoor/fastify-hookable
 ```
 
-> Note: `hookable` is a peer dependency.
-
 ### Compatibility
 
 | Plugin version | Fastify version | Hookable version |

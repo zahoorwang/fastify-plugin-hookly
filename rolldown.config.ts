@@ -4,10 +4,12 @@ import { dts } from 'rolldown-plugin-dts';
 import { dependencies } from './package.json';
 
 const basic = defineConfig({
-  input: 'src/index.ts',
+  input: {
+    index: 'src/index.ts'
+  },
   platform: 'node',
   treeshake: true,
-  external: Object.keys(dependencies || {})
+  external: Object.keys(dependencies || {}).concat(/^hookable/i)
 });
 
 export default defineConfig([
@@ -17,7 +19,9 @@ export default defineConfig([
       dir: 'dist',
       format: 'commonjs',
       exports: 'named',
-      cleanDir: true
+      cleanDir: true,
+      chunkFileNames: `chunk.js`,
+      entryFileNames: '[name].js'
     }
   },
   {
@@ -30,7 +34,9 @@ export default defineConfig([
     ],
     output: {
       dir: 'dist',
-      format: 'esm'
+      format: 'esm',
+      chunkFileNames: `chunk.js`,
+      entryFileNames: '[name].js'
     }
   }
 ]);

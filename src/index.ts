@@ -1,5 +1,5 @@
 import fp from 'fastify-plugin';
-import { createDebugger, createHooks, Hookable } from 'hookable';
+import { createDebugger, createHooks } from 'hookable';
 
 import type { FastifyPluginCallback } from 'fastify';
 import type { CreateDebuggerOptions } from 'hookable';
@@ -29,8 +29,6 @@ type InferSpyEvent<HT extends Record<string, any>> = {
 }[keyof HT];
 
 /* oxlint-enable */
-
-export { Hookable, createDebugger, createHooks };
 
 // -------------------------------------------------------------------------------------------------
 // Type Definitions

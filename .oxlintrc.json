@@ -1,4 +1,6 @@
 {
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+
   "extends": ["recommended"],
   "ignorePatterns": ["test", "dist", "node_modules"],
   "rules": {
