@@ -27,6 +27,9 @@
   "author": "Zahoor Wang <zahoor.wang@gmail.com>",
   "sideEffects": false,
   "type": "commonjs",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
