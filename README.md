@@ -1,16 +1,16 @@
-# @zahoor/fastify-hookable
+# `@zahoor/fastify-hookly`
 
-[![NPM version](https://img.shields.io/npm/v/@zahoor/fastify-hookable?style=for-the-badge)](https://www.npmjs.com/package/@zahoor/fastify-hookable)
+[![NPM version](https://img.shields.io/npm/v/@zahoor/fastify-hookly?style=for-the-badge)](https://www.npmjs.com/package/@zahoor/fastify-hookly)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![Coverage Status](https://img.shields.io/badge/coverage-100%25-brightgreen?style=for-the-badge)]()
 
-> **The current version does not work; DO NOT USE.**
+> **The current version has not been fully tested and is considered unstable; DO NOT USE.**
 
 A plugin for [Fastify](http://fastify.dev/) that integrates [`hookable`](https://github.com/unjs/hookable), providing **lifecycle hooks**, **per-request hook contexts**, and **optional debugger integration** for inspecting hook calls.
 
 ## Features
 
-- Decorates both **Fastify instance** and **Fastify requests** with a `hookable` object.
+- Decorates both **Fastify instance** and **Fastify requests** with a `hookly` object.
 - Supports `beforeEach` and `afterEach` hooks for introspection.
 - Automatically cleans up all hooks on server shutdown.
 - Optional integration with [`createDebugger`](https://github.com/unjs/hookable?tab=readme-ov-file#createdebugger) for detailed console output.
@@ -19,24 +19,24 @@ A plugin for [Fastify](http://fastify.dev/) that integrates [`hookable`](https:/
 ## Install
 
 ```sh
-npm i @zahoor/fastify-hookable
+npm i @zahoor/fastify-hookly
 ```
 
 ### Compatibility
 
-| Plugin version | Fastify version | Hookable version |
-| -------------- | --------------- | ---------------- |
-| `current`      | `^5.x`          | `^5.x`           |
+| Plugin version | `Fastify` version | `Hookable` version |
+| -------------- | ----------------- | ------------------ |
+| `current`      | `^5.x`            | `^5.x`             |
 
 ## Usage
 
 ```ts
 import fastify from 'fastify';
-import hookable from '@zahoor/fastify-hookable';
+import hookly from '@zahoor/fastify-hookly';
 
 const serve = fastify();
 
-serve.register(hookable, {
+serve.register(hookly, {
   before: event => console.log('Before hook:', event.name),
   after: event => console.log('After hook:', event.name),
   debuggerOptions: { tag: 'my-plugin', inspect: true }
@@ -44,7 +44,7 @@ serve.register(hookable, {
 
 serve.get('/ping', async request => {
   // Access per-request hookable
-  request.hookable.callHook('ping');
+  request.hookly.callHook('ping');
   return { ok: true };
 });
 
@@ -56,7 +56,7 @@ await serve.listen({ port: 3000 });
 You can extend the `Hooks` interface via declaration merging to define your own hook names and callback signatures:
 
 ```ts
-declare module '@zahoor/fastify-hookable' {
+declare module '@zahoor/fastify-hookly' {
   interface Hooks {
     myCustomHook: { foo: string };
   }
@@ -66,7 +66,7 @@ declare module '@zahoor/fastify-hookable' {
 This allows type-safe calls to your custom hooks:
 
 ```ts
-serve.hookable.callHook('myCustomHook', { foo: 'bar' });
+serve.hookly.callHook('myCustomHook', { foo: 'bar' });
 ```
 
 ## Options

@@ -44,7 +44,7 @@ type InferSpyEvent<HT extends Record<string, any>> = {
  *
  * For example, in any `.d.ts` or `.ts` file:
  * ```ts
- * declare module '@zahoor/fastify-hookable' {
+ * declare module '@zahoor/fastify-hookly' {
  *   interface Hooks {
  *     foo: string;
  *   }
@@ -55,11 +55,11 @@ type InferSpyEvent<HT extends Record<string, any>> = {
 export interface Hooks extends Record<string, any> {}
 
 /**
- * Configuration options for the `fastifyHookable` plugin.
+ * Configuration options for the `fastifyHookly` plugin.
  *
- * @template HooksT - The type of hooks managed by the hookable instance.
+ * @template HooksT - The type of hooks managed by the `Hookable` instance.
  */
-export interface FastifyHookableOptions<HooksT extends Hooks = Hooks> {
+export interface FastifyHooklyOptions<HooksT extends Hooks = Hooks> {
   /**
    * Called when the `Fastify` server is closing.
    * Can perform cleanup or teardown logic before all hooks are removed.
@@ -89,7 +89,7 @@ export interface FastifyHookableOptions<HooksT extends Hooks = Hooks> {
  * Internal plugin type signature used by Fastify.
  * @internal
  */
-type FastifyHookablePlugin = FastifyPluginCallback<NonNullable<FastifyHookableOptions>>;
+type FastifyHooklyPlugin = FastifyPluginCallback<NonNullable<FastifyHooklyOptions>>;
 
 // -------------------------------------------------------------------------------------------------
 // Runtime Type Guards
@@ -135,33 +135,33 @@ function isCreateDebuggerOptions(value: unknown): value is CreateDebuggerOptions
  * and optional debugger integration for inspecting hook calls.
  *
  * ### Features
- * - Provides a `hookable` instance on both Fastify and Request scopes.
+ * - Provides a `hookly` object (hookable instance) on both Fastify and Request scopes.
  * - Supports `beforeEach` and `afterEach` spy hooks for introspection.
  * - Automatically removes hooks on server close.
  * - Optional `createDebugger` integration.
  */
-const plugin: FastifyHookablePlugin = (fastify, opts, done) => {
-  const hookable = createHooks<Hooks>();
+const plugin: FastifyHooklyPlugin = (fastify, opts, done) => {
+  const hookly = createHooks<Hooks>();
 
   // Optional debugger instance, only created if debuggerOptions is valid
   let debuggered: ReturnType<typeof createDebugger> | undefined;
 
   // Attach hookable instance to Fastify and Request scopes
-  fastify.decorate('hookable', { getter: () => hookable });
-  fastify.decorateRequest('hookable', { getter: () => hookable });
+  fastify.decorate('hookly', { getter: () => hookly });
+  fastify.decorateRequest('hookly', { getter: () => hookly });
 
   // Register before/after spy hooks
   if (typeof opts.before === 'function') {
-    hookable.beforeEach(opts.before);
+    hookly.beforeEach(opts.before);
   }
 
   if (typeof opts.after === 'function') {
-    hookable.afterEach(opts.after);
+    hookly.afterEach(opts.after);
   }
 
   // Optionally enable debugger if configuration is valid
   if (isCreateDebuggerOptions(opts.debuggerOptions)) {
-    debuggered = createDebugger(hookable, opts.debuggerOptions);
+    debuggered = createDebugger(hookly, opts.debuggerOptions);
   }
 
   // Clean up all hooks on Fastify shutdown
@@ -171,7 +171,7 @@ const plugin: FastifyHookablePlugin = (fastify, opts, done) => {
     } finally {
       // Ensure hooks are removed and debugger is closed even if `close` callback throws
       debuggered?.close();
-      hookable.removeAllHooks();
+      hookly.removeAllHooks();
     }
   });
 
@@ -181,15 +181,15 @@ const plugin: FastifyHookablePlugin = (fastify, opts, done) => {
 /**
  * The Fastify plugin that integrates the [`hookable`](https://github.com/unjs/hookable) system.
  *
- * It decorates both `FastifyInstance` and `FastifyRequest` with a `hookable` instance,
+ * It decorates both `FastifyInstance` and `FastifyRequest` with a `hookly` object (`Hookable` instance),
  * allowing lifecycle event hooks and optional debugging utilities.
  */
-export const fastifyHookable = fp(plugin, {
+export const fastifyHookly = fp(plugin, {
   fastify: '5.x',
-  name: '@zahoor/fastify-hookable'
+  name: '@zahoor/fastify-hookly'
 });
 
-export default fastifyHookable;
+export default fastifyHookly;
 
 // -------------------------------------------------------------------------------------------------
 // Fastify Type Augmentation
@@ -197,39 +197,39 @@ export default fastifyHookable;
 
 /**
  * Extends the built-in Fastify type definitions to include
- * a `hookable` instance on both `FastifyInstance` and `FastifyRequest`.
+ * a `hookly` object (`Hookable` instance) on both `FastifyInstance` and `FastifyRequest`.
  *
- * This provides type-safe access to the shared `hookable` object
+ * This provides type-safe access to the shared `hookly` object
  * throughout your Fastify application — allowing plugins,
  * routes, and requests to register, call, and observe custom hooks.
  *
  * For example:
  * ```ts
- * await fastify.hookable.callHook('myHook', { foo: 123 });
+ * await fastify.hookly.callHook('myHook', { foo: 123 });
  *
  * fastify.addHook('onRequest', async (req) => {
- *   await req.hookable.callHook('myHook', req);
+ *   await req.hookly.callHook('myHook', req);
  * });
  * ```
  *
- * The `hookable` instance type is derived from the global {@link Hooks} interface,
+ * The `hookly` object (`Hookable` instance) type is derived from the global {@link Hooks} interface,
  * which you can **extend via TypeScript declaration merging**
  * to define your own hook names and callback signatures.
  */
 declare module 'fastify' {
   interface FastifyInstance {
     /**
-     * A global `hookable` instance shared across the Fastify server.
+     * A global `hookly` object (`Hookable` instance) shared across the Fastify server.
      * Used to register, trigger, and inspect custom hooks.
      */
-    hookable: Hookable<Hooks>;
+    hookly: Hookable<Hooks>;
   }
 
   interface FastifyRequest {
     /**
-     * A per-request reference to the same `hookable` instance,
+     * A per-request reference to the same `hookly` object (`Hookable` instance),
      * allowing hooks to be called or observed within route handlers.
      */
-    hookable: Hookable<Hooks>;
+    hookly: Hookable<Hooks>;
   }
 }

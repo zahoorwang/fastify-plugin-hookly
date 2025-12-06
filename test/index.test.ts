@@ -1,21 +1,22 @@
 import fastify from 'fastify';
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 
-import { fastifyHookable } from '../src/index';
+import { fastifyHookly } from '../src/index';
+import { name } from '../package.json' with { type: 'json' };
 
 import type { FastifyInstance } from 'fastify';
 
-import type { FastifyHookableOptions } from '../src/index';
+import type { FastifyHooklyOptions } from '../src/index';
 
-async function setupServe(options: Partial<FastifyHookableOptions> = {}, handlePreReady?: (instance: FastifyInstance) => void | Promise<void>): Promise<FastifyInstance> {
+async function setupServe(options: Partial<FastifyHooklyOptions> = {}, handlePreReady?: (instance: FastifyInstance) => void | Promise<void>): Promise<FastifyInstance> {
   const instance = fastify();
-  await instance.register(fastifyHookable, options as any);
+  await instance.register(fastifyHookly, options as any);
   await handlePreReady?.(instance);
   await instance.ready();
   return instance;
 }
 
-async function withDebuggerOptions(debuggerOptions: Partial<FastifyHookableOptions['debuggerOptions']>): Promise<void> {
+async function withDebuggerOptions(debuggerOptions: Partial<FastifyHooklyOptions['debuggerOptions']>): Promise<void> {
   let instance: FastifyInstance | undefined;
   try {
     instance = await setupServe({ debuggerOptions });
@@ -25,7 +26,7 @@ async function withDebuggerOptions(debuggerOptions: Partial<FastifyHookableOptio
   }
 }
 
-describe('@zahoor/fastify-hookable', () => {
+describe(`plugin: ${name}`, () => {
   let serve: FastifyInstance;
   const beforeSpied = vi.fn();
   const afterSpied = vi.fn();
@@ -42,8 +43,8 @@ describe('@zahoor/fastify-hookable', () => {
       async instance => {
         // Register a temporary route for request hookable testing
         instance.get('/test-request', async request => {
-          expect(request.hookable).toBeDefined();
-          expect(typeof request.hookable.callHook).toBe('function');
+          expect(request.hookly).toBeDefined();
+          expect(typeof request.hookly.callHook).toBe('function');
           return { ok: true };
         });
       }
@@ -58,12 +59,12 @@ describe('@zahoor/fastify-hookable', () => {
   // Fastify instance & request decoration
   // --------------------------------------------
 
-  it('should decorate Fastify instance with hookable', () => {
-    expect(serve.hookable).toBeDefined();
-    expect(typeof serve.hookable.callHook).toBe('function');
+  it('should decorate Fastify instance with hookly', () => {
+    expect(serve.hookly).toBeDefined();
+    expect(typeof serve.hookly.callHook).toBe('function');
   });
 
-  it('should decorate Fastify request with hookable', async () => {
+  it('should decorate Fastify request with hookly', async () => {
     const res = await serve.inject({ method: 'GET', url: '/test-request' });
     expect(res.statusCode).toBe(200);
   });
@@ -74,9 +75,9 @@ describe('@zahoor/fastify-hookable', () => {
 
   it('should call before and after hooks correctly', async () => {
     const hookName = 'test:hook';
-    serve.hookable.hook(hookName, (msg: string) => `hooked-${msg}`);
+    serve.hookly.hook(hookName, (msg: string) => `hooked-${msg}`);
 
-    const result = await serve.hookable.callHook(hookName, 'message');
+    const result = await serve.hookly.callHook(hookName, 'message');
 
     expect(result).toEqual('hooked-message');
     expect(beforeSpied).toHaveBeenCalled();

@@ -1,21 +1,22 @@
 {
-  "name": "@zahoor/fastify-hookable",
+  "name": "@zahoor/fastify-hookly",
   "version": "0.0.1",
-  "description": "A Fastify plugin providing a type-safe, extensible hook system powered by hookable, with optional debugger and lifecycle integration.",
+  "description": "A Fastify plugin providing a type-safe, extensible hook system powered by hookable.",
   "keywords": [
     "fastify",
     "plugin",
     "plugins",
     "hook",
+    "hookly",
     "hookable"
   ],
-  "homepage": "https://zahoor.wang/fastify/hookable",
+  "homepage": "https://zahoor.wang/fastify/hookly",
   "bugs": {
-    "url": "https://github.com/zahoorwang/fastify-plugin-hookable/issues"
+    "url": "https://github.com/zahoorwang/fastify-plugin-hookly/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zahoorwang/fastify-plugin-hookable.git"
+    "url": "git+https://github.com/zahoorwang/fastify-plugin-hookly.git"
   },
   "funding": [
     {
@@ -44,6 +45,7 @@
     "code:lint": "oxlint",
     "code:lint:fix": "oxlint --fix",
     "code:test": "vitest run --typecheck.tsconfig tsconfig.test.json --coverage",
+    "code:test:ui": "npm run code:test && npx -y serve -l 80 coverage/",
     "package:sort": "sort-package-json",
     "package:taze": "taze major -I --peer --force",
     "test": "npm run code:test"
@@ -54,16 +56,16 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
-    "@vitest/coverage-v8": "^4.0.14",
+    "@vitest/coverage-v8": "^4.0.15",
     "fastify": "^5.6.2",
-    "oxfmt": "^0.15.0",
-    "oxlint": "^1.30.0",
+    "oxfmt": "^0.16.0",
+    "oxlint": "^1.31.0",
     "rolldown": "latest",
-    "rolldown-plugin-dts": "^0.18.1",
+    "rolldown-plugin-dts": "^0.18.3",
     "sort-package-json": "^3.5.0",
     "taze": "^19.9.2",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.14"
+    "vitest": "^4.0.15"
   },
   "engines": {
     "node": ">=18.0.0"
