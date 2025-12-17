@@ -4,11 +4,11 @@
   "description": "A Fastify plugin providing a type-safe, extensible hook system powered by hookable.",
   "keywords": [
     "fastify",
-    "plugin",
-    "plugins",
     "hook",
+    "hookable",
     "hookly",
-    "hookable"
+    "plugin",
+    "plugins"
   ],
   "homepage": "https://zahoor.wang/fastify/hookly",
   "bugs": {
@@ -18,6 +18,7 @@
     "type": "git",
     "url": "git+https://github.com/zahoorwang/fastify-plugin-hookly.git"
   },
+  "author": "Zahoor Wang <zahoor.wang@gmail.com>",
   "funding": [
     {
       "type": "github",
@@ -25,13 +26,12 @@
     }
   ],
   "license": "MIT",
-  "author": "Zahoor Wang <zahoor.wang@gmail.com>",
   "sideEffects": false,
   "type": "commonjs",
+  "main": "dist/index.js",
   "exports": {
     ".": "./dist/index.js"
   },
-  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "LICENSE",
@@ -44,8 +44,10 @@
     "code:fmt": "oxfmt",
     "code:lint": "oxlint",
     "code:lint:fix": "oxlint --fix",
-    "code:test": "vitest run --typecheck.tsconfig tsconfig.test.json --coverage",
-    "code:test:ui": "npm run code:test && npx -y serve -l 80 coverage/",
+    "code:start": "rolldown -w -c",
+    "code:test": "vitest run",
+    "code:test:co": "npm run code:test -- --coverage && npx -y serve -l 50000 coverage/",
+    "code:test:ui": "vitest --coverage --ui",
     "package:sort": "sort-package-json",
     "package:taze": "taze major -I --peer --force",
     "test": "npm run code:test"
@@ -55,17 +57,18 @@
     "hookable": "^5.5.3"
   },
   "devDependencies": {
-    "@types/node": "^24.10.1",
-    "@vitest/coverage-v8": "^4.0.15",
+    "@types/node": "^25.0.3",
+    "@vitest/coverage-v8": "^4.0.16",
+    "@vitest/ui": "^4.0.16",
     "fastify": "^5.6.2",
-    "oxfmt": "^0.16.0",
-    "oxlint": "^1.31.0",
+    "oxfmt": "^0.18.0",
+    "oxlint": "^1.33.0",
     "rolldown": "latest",
-    "rolldown-plugin-dts": "^0.18.3",
-    "sort-package-json": "^3.5.0",
+    "rolldown-plugin-dts": "^0.18.4",
+    "sort-package-json": "^3.6.0",
     "taze": "^19.9.2",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.15"
+    "vitest": "^4.0.16"
   },
   "engines": {
     "node": ">=18.0.0"

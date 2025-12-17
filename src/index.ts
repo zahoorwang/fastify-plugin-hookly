@@ -1,8 +1,8 @@
 import fp from 'fastify-plugin';
 import { createDebugger, createHooks } from 'hookable';
 
-import type { FastifyPluginCallback } from 'fastify';
-import type { CreateDebuggerOptions } from 'hookable';
+import type { FastifyPluginAsync } from 'fastify';
+import type { CreateDebuggerOptions, Hookable } from 'hookable';
 
 // -------------------------------------------------------------------------------------------------
 // Internal Utilities
@@ -89,7 +89,7 @@ export interface FastifyHooklyOptions<HooksT extends Hooks = Hooks> {
  * Internal plugin type signature used by Fastify.
  * @internal
  */
-type FastifyHooklyPlugin = FastifyPluginCallback<NonNullable<FastifyHooklyOptions>>;
+type FastifyHooklyPlugin = FastifyPluginAsync<NonNullable<FastifyHooklyOptions>>;
 
 // -------------------------------------------------------------------------------------------------
 // Runtime Type Guards
@@ -140,7 +140,7 @@ function isCreateDebuggerOptions(value: unknown): value is CreateDebuggerOptions
  * - Automatically removes hooks on server close.
  * - Optional `createDebugger` integration.
  */
-const plugin: FastifyHooklyPlugin = (fastify, opts, done) => {
+const plugin: FastifyHooklyPlugin = async (fastify, opts) => {
   const hookly = createHooks<Hooks>();
 
   // Optional debugger instance, only created if debuggerOptions is valid
@@ -174,8 +174,6 @@ const plugin: FastifyHooklyPlugin = (fastify, opts, done) => {
       hookly.removeAllHooks();
     }
   });
-
-  done();
 };
 
 /**
