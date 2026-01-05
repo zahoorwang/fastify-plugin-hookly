@@ -182,7 +182,7 @@ const plugin: FastifyHooklyPlugin = async (fastify, opts) => {
  * It decorates both `FastifyInstance` and `FastifyRequest` with a `hookly` object (`Hookable` instance),
  * allowing lifecycle event hooks and optional debugging utilities.
  */
-export const fastifyHookly = fp(plugin, {
+export const fastifyHookly: FastifyHooklyPlugin = fp(plugin, {
   fastify: '5.x',
   name: '@zahoor/fastify-hookly'
 });
@@ -205,8 +205,8 @@ export default fastifyHookly;
  * ```ts
  * await fastify.hookly.callHook('myHook', { foo: 123 });
  *
- * fastify.addHook('onRequest', async (req) => {
- *   await req.hookly.callHook('myHook', req);
+ * fastify.addHook('onRequest', async (request) => {
+ *   await req.hookly.callHook('myHook', request);
  * });
  * ```
  *

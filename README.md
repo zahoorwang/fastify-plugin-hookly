@@ -26,7 +26,7 @@ npm i @zahoor/fastify-hookly
 
 | Plugin version | `Fastify` version | `Hookable` version |
 | -------------- | ----------------- | ------------------ |
-| `current`      | `^5.x`            | `^5.x`             |
+| `current`      | `^5.x`            | `^6.x`             |
 
 ## Usage
 
@@ -44,7 +44,7 @@ serve.register(hookly, {
 
 serve.get('/ping', async request => {
   // Access per-request hookable
-  request.hookly.callHook('ping');
+  await request.hookly.callHook('ping');
   return { ok: true };
 });
 

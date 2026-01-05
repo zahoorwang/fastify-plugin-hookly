@@ -75,9 +75,10 @@ describe(`plugin: ${name}`, () => {
 
   it('should call before and after hooks correctly', async () => {
     const hookName = 'test:hook';
-    serve.hookly.hook(hookName, (msg: string) => `hooked-${msg}`);
 
-    const result = await serve.hookly.callHook(hookName, 'message');
+    let result = '';
+    serve.hookly.hook(hookName, (msg: string) => (result = `hooked-${msg}`));
+    await serve.hookly.callHook(hookName, 'message');
 
     expect(result).toEqual('hooked-message');
     expect(beforeSpied).toHaveBeenCalled();
